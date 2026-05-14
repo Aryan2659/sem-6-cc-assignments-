@@ -1,0 +1,25 @@
+.error-msg {
+    color: #c23934;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.success-toast {
+    background: #2e844a;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+table th {
+    background-color: #0070d2;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+}
+
+table td {
+    padding: 8px 10px;
+}

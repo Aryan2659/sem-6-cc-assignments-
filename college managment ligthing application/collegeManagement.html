@@ -1,0 +1,270 @@
+<template>
+    <lightning-card title="🎓 College Management System" icon-name="standard:education">
+
+        <!-- SUCCESS MESSAGE -->
+        <template if:true={successMessage}>
+            <div class="success-toast slds-m-around_medium" role="alert">
+                ✅ {successMessage}
+            </div>
+        </template>
+
+        <div class="slds-m-around_medium">
+
+            <!-- ════════════════════════════════ -->
+            <!--            TABS                  -->
+            <!-- ════════════════════════════════ -->
+            <lightning-tabset>
+
+                <!-- ══════════════════════════════════════════ -->
+                <!--              STUDENT TAB                   -->
+                <!-- ══════════════════════════════════════════ -->
+                <lightning-tab label="👨‍🎓 Students" value="students">
+                    <div class="slds-m-top_medium">
+
+                        <!-- ADD STUDENT FORM -->
+                        <lightning-card title="➕ Add New Student" icon-name="utility:user">
+                            <div class="slds-m-around_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+
+                                    <!-- Student Name -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            label="Student Name"
+                                            value={newStudent.name}
+                                            onchange={handleStudentChange}
+                                            data-field="name"
+                                            placeholder="Enter full name"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={studentErrors.name}>
+                                            <p class="error-msg">⚠ {studentErrors.name}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Roll Number -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="number"
+                                            label="Roll Number"
+                                            value={newStudent.rollNo}
+                                            onchange={handleStudentChange}
+                                            data-field="rollNo"
+                                            placeholder="e.g. 101"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={studentErrors.rollNo}>
+                                            <p class="error-msg">⚠ {studentErrors.rollNo}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Marks -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="number"
+                                            label="Marks (out of 100)"
+                                            value={newStudent.marks}
+                                            onchange={handleStudentChange}
+                                            data-field="marks"
+                                            placeholder="Between 0 and 100"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={studentErrors.marks}>
+                                            <p class="error-msg">⚠ {studentErrors.marks}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="email"
+                                            label="Email Address"
+                                            value={newStudent.email}
+                                            onchange={handleStudentChange}
+                                            data-field="email"
+                                            placeholder="e.g. student@college.com"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={studentErrors.email}>
+                                            <p class="error-msg">⚠ {studentErrors.email}</p>
+                                        </template>
+                                    </div>
+
+                                </div>
+
+                                <div class="slds-m-top_medium">
+                                    <lightning-button variant="brand"  label="💾 Save Student" onclick={handleSaveStudent} class="slds-m-right_small"></lightning-button>
+                                    <lightning-button variant="neutral" label="✖ Reset"        onclick={handleResetStudent}></lightning-button>
+                                </div>
+                            </div>
+                        </lightning-card>
+
+                        <!-- STUDENT RECORDS TABLE -->
+                        <lightning-card title="📋 Student Records" icon-name="utility:list" class="slds-m-top_medium">
+                            <div class="slds-m-around_medium">
+                                <template if:true={students.length}>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Roll No</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Marks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={students} for:item="s">
+                                                <tr key={s.Id}>
+                                                    <td>{s.Roll_No__c}</td>
+                                                    <td>{s.Name}</td>
+                                                    <td>{s.Email__c}</td>
+                                                    <td>{s.Marks__c}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </template>
+                                <template if:false={students.length}>
+                                    <p class="slds-text-color_weak slds-text-align_center slds-m-top_medium">No student records yet. Add one above!</p>
+                                </template>
+                            </div>
+                        </lightning-card>
+                    </div>
+                </lightning-tab>
+
+                <!-- ══════════════════════════════════════════ -->
+                <!--              FACULTY TAB                   -->
+                <!-- ══════════════════════════════════════════ -->
+                <lightning-tab label="👨‍🏫 Faculty" value="faculty">
+                    <div class="slds-m-top_medium">
+
+                        <!-- ADD FACULTY FORM -->
+                        <lightning-card title="➕ Add New Faculty" icon-name="utility:user">
+                            <div class="slds-m-around_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+
+                                    <!-- Faculty Name -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            label="Faculty Name"
+                                            value={newFaculty.name}
+                                            onchange={handleFacultyChange}
+                                            data-field="name"
+                                            placeholder="Enter full name (min 3 characters)"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={facultyErrors.name}>
+                                            <p class="error-msg">⚠ {facultyErrors.name}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Faculty ID -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="number"
+                                            label="Faculty ID"
+                                            value={newFaculty.facultyId}
+                                            onchange={handleFacultyChange}
+                                            data-field="facultyId"
+                                            placeholder="Unique ID e.g. 201"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={facultyErrors.facultyId}>
+                                            <p class="error-msg">⚠ {facultyErrors.facultyId}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Salary -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="number"
+                                            label="Salary (₹)"
+                                            value={newFaculty.salary}
+                                            onchange={handleFacultyChange}
+                                            data-field="salary"
+                                            placeholder="Between 10,000 and 5,00,000"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={facultyErrors.salary}>
+                                            <p class="error-msg">⚠ {facultyErrors.salary}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Department -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-combobox
+                                            label="Department"
+                                            value={newFaculty.department}
+                                            options={departmentOptions}
+                                            onchange={handleFacultyChange}
+                                            data-field="department"
+                                            placeholder="-- Select Department --"
+                                            required>
+                                        </lightning-combobox>
+                                        <template if:true={facultyErrors.department}>
+                                            <p class="error-msg">⚠ {facultyErrors.department}</p>
+                                        </template>
+                                    </div>
+
+                                    <!-- Joining Date -->
+                                    <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                                        <lightning-input
+                                            type="date"
+                                            label="Joining Date"
+                                            value={newFaculty.joiningDate}
+                                            onchange={handleFacultyChange}
+                                            data-field="joiningDate"
+                                            required>
+                                        </lightning-input>
+                                        <template if:true={facultyErrors.joiningDate}>
+                                            <p class="error-msg">⚠ {facultyErrors.joiningDate}</p>
+                                        </template>
+                                    </div>
+
+                                </div>
+
+                                <div class="slds-m-top_medium">
+                                    <lightning-button variant="brand"   label="💾 Save Faculty" onclick={handleSaveFaculty} class="slds-m-right_small"></lightning-button>
+                                    <lightning-button variant="neutral" label="✖ Reset"         onclick={handleResetFaculty}></lightning-button>
+                                </div>
+                            </div>
+                        </lightning-card>
+
+                        <!-- FACULTY RECORDS TABLE -->
+                        <lightning-card title="📋 Faculty Records" icon-name="utility:list" class="slds-m-top_medium">
+                            <div class="slds-m-around_medium">
+                                <template if:true={facultyList.length}>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Faculty ID</th>
+                                                <th>Name</th>
+                                                <th>Department</th>
+                                                <th>Salary (₹)</th>
+                                                <th>Joining Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={facultyList} for:item="f">
+                                                <tr key={f.Id}>
+                                                    <td>{f.Faculty_ID__c}</td>
+                                                    <td>{f.Name}</td>
+                                                    <td>{f.Department__c}</td>
+                                                    <td>{f.Salary__c}</td>
+                                                    <td>{f.Joining_Date__c}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </template>
+                                <template if:false={facultyList.length}>
+                                    <p class="slds-text-color_weak slds-text-align_center slds-m-top_medium">No faculty records yet. Add one above!</p>
+                                </template>
+                            </div>
+                        </lightning-card>
+                    </div>
+                </lightning-tab>
+
+            </lightning-tabset>
+        </div>
+    </lightning-card>
+</template>
