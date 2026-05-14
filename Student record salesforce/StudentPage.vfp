@@ -1,0 +1,153 @@
+<apex:page controller="StudentController" showHeader="true" sidebar="false">
+
+    <!-- Page Styling -->
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; }
+        .page-title {
+            background: #1589ee;
+            color: white;
+            padding: 16px 24px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 0 20px 20px 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 2px solid #1589ee;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #1589ee;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f0f7ff; }
+        .btn-save    { background: #1589ee; color: white; padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-delete  { background: #e74c3c; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-edit    { background: #f39c12; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-cancel  { background: #aaa;    color: white; padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; }
+        .form-row { margin-bottom: 12px; }
+        .form-row label { display: inline-block; width: 120px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="number"] {
+            padding: 7px 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .no-records { color: #999; text-align: center; padding: 20px; }
+    </style>
+
+    <!-- Controller binding -->
+    <apex:form >
+        <apex:messages styleClass="slds-notify slds-notify_toast" />
+
+        <!-- Page Title -->
+        <div class="page-title">🎓 Student Record Management System</div>
+
+        <!-- ── ADD NEW STUDENT FORM ── -->
+        <div class="section">
+            <div class="section-title">➕ Add New Student</div>
+
+            <div class="form-row">
+                <label>Full Name :</label>
+                <apex:inputField value="{!newStudent.Name}" html-placeholder="Enter student name" />
+            </div>
+            <div class="form-row">
+                <label>Roll No :</label>
+                <apex:inputField value="{!newStudent.Roll_No__c}" html-placeholder="e.g. 101" />
+            </div>
+            <div class="form-row">
+                <label>Class :</label>
+                <apex:inputField value="{!newStudent.Class__c}" html-placeholder="e.g. FY-B.Tech" />
+            </div>
+            <div class="form-row">
+                <label>Mobile No :</label>
+                <apex:inputField value="{!newStudent.Mobile_No__c}" html-placeholder="e.g. 9876543210" />
+            </div>
+            <br/>
+            <apex:commandButton value="💾 Save Student" action="{!saveStudent}" styleClass="btn-save" />
+        </div>
+
+        <!-- ── EDIT STUDENT FORM (shown only when editing) ── -->
+        <apex:outputPanel rendered="{!isEditing}">
+            <div class="section" style="border: 2px solid #f39c12;">
+                <div class="section-title">✏️ Edit Student Record</div>
+
+                <div class="form-row">
+                    <label>Full Name :</label>
+                    <apex:inputField value="{!editStudent.Name}" />
+                </div>
+                <div class="form-row">
+                    <label>Roll No :</label>
+                    <apex:inputField value="{!editStudent.Roll_No__c}" />
+                </div>
+                <div class="form-row">
+                    <label>Class :</label>
+                    <apex:inputField value="{!editStudent.Class__c}" />
+                </div>
+                <div class="form-row">
+                    <label>Mobile No :</label>
+                    <apex:inputField value="{!editStudent.Mobile_No__c}" />
+                </div>
+                <br/>
+                <apex:commandButton value="✅ Update"  action="{!updateStudent}" styleClass="btn-save"   />
+                &nbsp;
+                <apex:commandButton value="✖ Cancel"  action="{!cancelEdit}"    styleClass="btn-cancel" />
+            </div>
+        </apex:outputPanel>
+
+        <!-- ── STUDENT RECORDS TABLE ── -->
+        <div class="section">
+            <div class="section-title">📋 All Student Records</div>
+
+            <apex:dataTable value="{!students}" var="s" styleClass="table" rowClasses="odd,even">
+                <apex:column headerValue="Name">
+                    <apex:outputText value="{!s.Name}" />
+                </apex:column>
+                <apex:column headerValue="Roll No">
+                    <apex:outputText value="{!s.Roll_No__c}" />
+                </apex:column>
+                <apex:column headerValue="Class">
+                    <apex:outputText value="{!s.Class__c}" />
+                </apex:column>
+                <apex:column headerValue="Mobile No">
+                    <apex:outputText value="{!s.Mobile_No__c}" />
+                </apex:column>
+                <apex:column headerValue="Actions">
+                    <!-- Edit button -->
+                    <apex:commandButton value="✏ Edit"
+                        action="{!loadEdit}"
+                        styleClass="btn-edit">
+                        <apex:param name="editId" value="{!s.Id}" assignTo="{!editStudent.Id}" />
+                    </apex:commandButton>
+                    &nbsp;
+                    <!-- Delete button -->
+                    <apex:commandButton value="🗑 Delete"
+                        action="{!deleteStudent}"
+                        styleClass="btn-delete"
+                        onclick="return confirm('Delete this student record?');">
+                        <apex:param name="deleteId" value="{!s.Id}" />
+                    </apex:commandButton>
+                </apex:column>
+            </apex:dataTable>
+
+            <apex:outputPanel rendered="{!students.size == 0}">
+                <p class="no-records">No student records found. Add one above!</p>
+            </apex:outputPanel>
+        </div>
+
+    </apex:form>
+</apex:page>
