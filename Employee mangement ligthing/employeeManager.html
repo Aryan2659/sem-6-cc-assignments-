@@ -1,0 +1,181 @@
+<template>
+    <lightning-card title="👔 Employee Management System" icon-name="standard:contact">
+
+        <!-- ── SUCCESS / ERROR MESSAGES ── -->
+        <template if:true={successMessage}>
+            <div class="slds-notify slds-notify_toast slds-theme_success slds-m-around_medium" role="alert">
+                <span class="slds-icon_container slds-m-right_small">✅</span>
+                <p>{successMessage}</p>
+            </div>
+        </template>
+
+        <div class="slds-m-around_medium">
+
+            <!-- ══════════════════════════════════════ -->
+            <!--         ADD EMPLOYEE FORM              -->
+            <!-- ══════════════════════════════════════ -->
+            <lightning-card title="➕ Add New Employee" icon-name="utility:add">
+                <div class="slds-m-around_medium">
+
+                    <div class="slds-grid slds-wrap slds-gutters">
+
+                        <!-- Employee Name -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                label="Employee Name"
+                                value={newEmp.empName}
+                                onchange={handleChange}
+                                data-field="empName"
+                                placeholder="Enter full name (min 3 characters)"
+                                required>
+                            </lightning-input>
+                            <template if:true={errors.empName}>
+                                <p class="error-msg">⚠ {errors.empName}</p>
+                            </template>
+                        </div>
+
+                        <!-- Employee ID -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="number"
+                                label="Employee ID"
+                                value={newEmp.empId}
+                                onchange={handleChange}
+                                data-field="empId"
+                                placeholder="Enter unique ID (e.g. 101)"
+                                min="1"
+                                required>
+                            </lightning-input>
+                            <template if:true={errors.empId}>
+                                <p class="error-msg">⚠ {errors.empId}</p>
+                            </template>
+                        </div>
+
+                        <!-- Salary -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="number"
+                                label="Salary (₹)"
+                                value={newEmp.salary}
+                                onchange={handleChange}
+                                data-field="salary"
+                                placeholder="Between 10,000 and 5,00,000"
+                                required>
+                            </lightning-input>
+                            <template if:true={errors.salary}>
+                                <p class="error-msg">⚠ {errors.salary}</p>
+                            </template>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="email"
+                                label="Email Address"
+                                value={newEmp.email}
+                                onchange={handleChange}
+                                data-field="email"
+                                placeholder="e.g. name@company.com"
+                                required>
+                            </lightning-input>
+                            <template if:true={errors.email}>
+                                <p class="error-msg">⚠ {errors.email}</p>
+                            </template>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-combobox
+                                label="Department"
+                                value={newEmp.department}
+                                options={departmentOptions}
+                                onchange={handleChange}
+                                data-field="department"
+                                placeholder="-- Select Department --"
+                                required>
+                            </lightning-combobox>
+                            <template if:true={errors.department}>
+                                <p class="error-msg">⚠ {errors.department}</p>
+                            </template>
+                        </div>
+
+                        <!-- Joining Date -->
+                        <div class="slds-col slds-size_1-of-2 slds-m-bottom_small">
+                            <lightning-input
+                                type="date"
+                                label="Joining Date"
+                                value={newEmp.joiningDate}
+                                onchange={handleChange}
+                                data-field="joiningDate"
+                                required>
+                            </lightning-input>
+                            <template if:true={errors.joiningDate}>
+                                <p class="error-msg">⚠ {errors.joiningDate}</p>
+                            </template>
+                        </div>
+
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="slds-m-top_medium">
+                        <lightning-button
+                            variant="brand"
+                            label="💾 Save Employee"
+                            onclick={handleSave}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <lightning-button
+                            variant="neutral"
+                            label="✖ Reset"
+                            onclick={handleReset}>
+                        </lightning-button>
+                    </div>
+
+                </div>
+            </lightning-card>
+
+            <!-- ══════════════════════════════════════ -->
+            <!--         EMPLOYEE RECORDS TABLE         -->
+            <!-- ══════════════════════════════════════ -->
+            <lightning-card title="📋 Employee Records" icon-name="utility:list" class="slds-m-top_medium">
+                <div class="slds-m-around_medium">
+
+                    <template if:true={employees.length}>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th>Emp ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    <th>Salary (₹)</th>
+                                    <th>Joining Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={employees} for:item="emp">
+                                    <tr key={emp.Id}>
+                                        <td>{emp.Employee_ID__c}</td>
+                                        <td>{emp.Name}</td>
+                                        <td>{emp.Email__c}</td>
+                                        <td>{emp.Department__c}</td>
+                                        <td>{emp.Salary__c}</td>
+                                        <td>{emp.Joining_Date__c}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+
+                    <template if:false={employees.length}>
+                        <p class="slds-text-color_weak slds-text-align_center slds-m-top_medium">
+                            No employee records yet. Add one above!
+                        </p>
+                    </template>
+
+                </div>
+            </lightning-card>
+
+        </div>
+    </lightning-card>
+</template>

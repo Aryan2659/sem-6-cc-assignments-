@@ -1,0 +1,17 @@
+.error-msg {
+    color: #c23934;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+table th {
+    background-color: #0070d2;
+    color: white;
+    padding: 10px;
+    font-weight: bold;
+}
+
+table td {
+    padding: 8px 10px;
+}
