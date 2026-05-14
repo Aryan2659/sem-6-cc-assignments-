@@ -1,0 +1,13 @@
+Hello from Instance A!
+This file was securely transferred between two AWS EC2 instances
+using SCP (Secure Copy Protocol) over SSH within a private VPC.
+
+Transfer Details:
+- Source      : EC2 Instance A (Sender)
+- Destination : EC2 Instance B (Receiver)
+- Protocol    : SCP over SSH
+- Network     : AWS VPC (Virtual Private Cloud)
+- Security    : Key-based authentication, no passwords
+
+This demonstrates secure file sharing between cloud instances
+with proper access permissions enforced by Linux file system.
