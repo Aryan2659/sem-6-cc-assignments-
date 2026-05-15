@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechStore Support Bot</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .chat-container {
+      width: 420px;
+      height: 600px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      background: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #f7f7f7;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      width: fit-content;
+      max-width: 80%;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .user {
+      background: #d1e7dd;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .bot {
+      background: #e2e3e5;
+      text-align: left;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #ccc;
+      background: white;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .input-area button {
+      margin-left: 10px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .input-area button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="chat-container">
+
+    <div class="chat-header">
+      TechStore Support Bot
+    </div>
+
+    <div class="chat-box" id="chatBox">
+
+      <div class="message bot">
+        <b>Bot:</b> Hello 👋 Welcome to TechStore! <br>
+        You can ask me about:
+        <br><br>
+        • Delivery <br>
+        • Refunds <br>
+        • Laptops <br>
+        • iPhones <br>
+        • Discounts <br>
+        • Payment methods
+      </div>
+
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message here...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+  </div>
+
+  <script>
+
+    // Knowledge Base
+    const rules = {
+
+      // Greetings
+      "hello": "Hi there! Welcome to TechStore 😊 How can I help you today?",
+      "hi": "Hello! Hope you're having a great day.",
+      "hey": "Hey 👋 Welcome to TechStore Support.",
+      "good morning": "Good morning ☀️ How can I assist you today?",
+      "good evening": "Good evening 🌙 Welcome to TechStore.",
+
+      // Store Info
+      "hours": "We are open from 9 AM to 9 PM, Monday through Saturday.",
+      "timing": "Our store timings are 9 AM to 9 PM.",
+      "location": "Our main store is located in Mumbai with branches across India.",
+      "address": "TechStore Headquarters: Mumbai, Maharashtra, India.",
+      "contact": "You can contact us at +91-9876543210 or support@techstore.com.",
+
+      // Delivery
+      "delivery": "Standard delivery takes 3-5 business days. Express delivery is available within 24 hours.",
+      "shipping": "We provide FREE shipping on orders above ₹999.",
+      "track": "You can track your order using the tracking ID sent to your email.",
+      "tracking": "Tracking details are sent via SMS and email after dispatch.",
+
+      // Refunds
+      "refund": "You can return items within 30 days with a valid receipt.",
+      "return": "Returns are simple! Visit our returns section or contact support.",
+      "exchange": "Products can be exchanged within 15 days if unused and in original packaging.",
+
+      // Products
+      "iphone": "We currently have iPhone 15, iPhone 16, and iPhone 16 Pro in stock 📱",
+      "samsung": "Samsung Galaxy S24 Ultra and Galaxy Fold are available.",
+      "laptop": "We sell gaming laptops, ultrabooks, and business laptops from Dell, HP, Lenovo, and Apple 💻",
+      "headphones": "We have wireless headphones from Sony, JBL, Apple, and Boat 🎧",
+      "gaming": "Gaming keyboards, mice, monitors, and consoles are available 🎮",
+      "macbook": "MacBook Air M3 and MacBook Pro models are available.",
+      "watch": "We have Apple Watches, Samsung Watches, and Noise smartwatches.",
+      "tablet": "iPads and Android tablets are available in multiple variants.",
+
+      // Prices & Discounts
+      "price": "Please tell me which product price you would like to know.",
+      "discount": "Current offers include up to 20% OFF on laptops and smartphones 🔥",
+      "offer": "Today's special offer: Buy accessories worth ₹2000 and get 10% OFF.",
+      "sale": "Mega Tech Sale is live this week 🛍️",
+      "cheap": "We have budget-friendly smartphones and accessories available.",
+
+      // Payment
+      "payment": "We accept UPI, Debit Cards, Credit Cards, Net Banking, and Cash on Delivery.",
+      "upi": "Yes, we support Google Pay, PhonePe, Paytm, and BHIM UPI.",
+      "emi": "EMI options are available on eligible products.",
+      "cod": "Cash on Delivery is available in selected locations.",
+
+      // Warranty & Support
+      "warranty": "Most electronics come with a 1-year manufacturer warranty.",
+      "repair": "We provide repair and servicing support for selected devices 🔧",
+      "support": "Our customer support team is available 24/7.",
+      "service": "Authorized servicing is available for many products.",
+
+      // Thanks & Bye
+      "thanks": "You're welcome 😊 Happy to help!",
+      "thank you": "Glad I could help ❤️",
+      "bye": "Thank you for visiting TechStore. Have a wonderful day 👋",
+      "goodbye": "Goodbye 👋 Visit again soon!"
+    };
+
+
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+
+    // Press Enter to Send
+    userInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+    // Send Message Function
+    function sendMessage() {
+
+      const text = userInput.value.trim().toLowerCase();
+
+      if (text === "") return;
+
+      // Show User Message
+      addMessage("You", text, "user");
+
+      // Clear Input
+      userInput.value = "";
+
+      // Default Bot Reply
+      let response =
+        "I'm sorry 😅 I don't understand that yet.<br><br>Try asking about delivery, refunds, products, discounts, payment methods, or store timings.";
+
+      // Rule Matching
+      for (let key in rules) {
+        if (text.includes(key)) {
+          response = rules[key];
+          break;
+        }
+      }
+
+      // Simulate Typing Delay
+      setTimeout(() => {
+        addMessage("Bot", response, "bot");
+      }, 500);
+    }
+
+    // Add Message to Chat
+    function addMessage(sender, text, className) {
+
+      const msgDiv = document.createElement("div");
+
+      msgDiv.classList.add("message");
+      msgDiv.classList.add(className);
+
+      msgDiv.innerHTML = `<b>${sender}:</b> ${text}`;
+
+      chatBox.appendChild(msgDiv);
+
+      // Auto Scroll
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+  </script>
+
+</body>
+</html>
